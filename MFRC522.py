@@ -1,7 +1,4 @@
-# Modifications made by Simon Monk https://github.com/simonmonk/
-# Modified from: https://github.com/mxgxw/MFRC522-python/blob/master/MFRC522.py
-# Trace commented out and the Read and Write methods modified to return values.
-# Also changed to use the Broadcom pin mode
+
 
 import RPi.GPIO as GPIO
 import spi
@@ -289,7 +286,7 @@ class MFRC522:
     (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, buf)
     
     if (status == self.MI_OK) and (backLen == 0x18):
-      #print "Size: " + str(backData[0])
+      
       return    backData[0]
     else:
       return 0
@@ -297,34 +294,34 @@ class MFRC522:
   def MFRC522_Auth(self, authMode, BlockAddr, Sectorkey, serNum):
     buff = []
 
-    # First byte should be the authMode (A or B)
+    
     buff.append(authMode)
 
-    # Second byte is the trailerBlock (usually 7)
+    
     buff.append(BlockAddr)
 
-    # Now we need to append the authKey which usually is 6 bytes of 0xFF
+    
     i = 0
     while(i < len(Sectorkey)):
       buff.append(Sectorkey[i])
       i = i + 1
     i = 0
 
-    # Next we append the first 4 bytes of the UID
+    
     while(i < 4):
       buff.append(serNum[i])
       i = i +1
 
-    # Now we start the authentication itself
+    
     (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_AUTHENT,buff)
 
-    # Check if an error occurred
+    
     if not(status == self.MI_OK):
       print("AUTH ERROR!!")
     if not (self.Read_MFRC522(self.Status2Reg) & 0x08) != 0:
       print("AUTH ERROR(status2reg & 0x08) != 0")
 
-    # Return the status
+    
     return status
   
   def MFRC522_StopCrypto1(self):
@@ -357,7 +354,7 @@ class MFRC522:
     if not(status == self.MI_OK) or not(backLen == 4) or not((backData[0] & 0x0F) == 0x0A):
         status = self.MI_ERR
     
-    #print str(backLen)+" backdata &0x0F == 0x0A "+str(backData[0]&0x0F)
+   
     if status == self.MI_OK:
         i = 0
         buf = []
@@ -370,14 +367,13 @@ class MFRC522:
         (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE,buf)
         if not(status == self.MI_OK) or not(backLen == 4) or not((backData[0] & 0x0F) == 0x0A):
             print("Error while writing")
-        # if status == self.MI_OK:
-        #     print "Data written"
+        
 
   def MFRC522_DumpClassic1K(self, key, uid):
     i = 0
     while i < 64:
         status = self.MFRC522_Auth(self.PICC_AUTHENT1A, i, key, uid)
-        # Check if authenticated
+       
         if status == self.MI_OK:
             self.MFRC522_Read(i)
         else:
